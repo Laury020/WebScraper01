@@ -1,0 +1,116 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
+
+# Create a new instance of the Firefox driver
+driver = webdriver.Chrome()
+
+# go to the ActionNetwork homepage
+driver.get("https://actionnetwork.org/users/sign_in")
+
+# print the title
+print(driver.title)
+
+# find the element that's name attribute is user[email] 
+inputElement = driver.find_element_by_name("user[email]")
+# type in the email
+inputElement.send_keys("EMAIL")
+
+# find the element that's name attribute is user[password]
+inputElement = driver.find_element_by_name("user[password]")
+#type in the password
+inputElement.send_keys("PASSWORD")
+
+# submit the form (although google automatically searches now without submitting)
+inputElement.submit()
+
+#go to the email part of the report
+#the report is premade and selects users who have signed up within 1 day from now
+driver.get("https://actionnetwork.org/reports/newusers01/create_email")
+
+#insert subject
+inputNewElement = driver.find_element_by_name("email[subject]")
+inputNewElement.send_keys("Welcome to Indivisible Berkeley")
+#insert sender
+inputNewElement = driver.find_element_by_name("email[from]")
+inputNewElement.send_keys("Thomas Dolman")
+#insert reply_to
+inputNewElement = driver.find_element_by_name("email[reply_to]")               
+inputNewElement.send_keys("EMAIL ADDRESS")
+
+#insert link through ActionNetwork system
+ElementLink = driver.find_element_by_css_selector(".re-button.re-link.redactor-toolbar-link-dropdown")
+ElementLink.click()
+ElementLink = driver.find_element_by_css_selector(".redactor-dropdown-link")
+ElementLink.click()
+ElementURL = driver.find_element_by_id("redactor-link-url")
+#Type selected URL
+strSlackInvite = "URL"
+ElementURL.send_keys(strSlackInvite)
+ElementName = driver.find_element_by_id("redactor-link-url-text")
+#Type presentation text
+ElementName.send_keys("Link to SLACK")
+ElementTemp = driver.find_element_by_id("redactor-link-blank")
+ElementTemp.click()
+ElementTemp = driver.find_element_by_id("redactor-modal-button-action")
+ElementTemp.click()
+
+#move to start of the text body
+inputNewElement.send_keys(Keys.TAB + Keys.HOME)
+
+#get text from .txt file to insert into the email.
+strPath2 = "PATH"
+f = open(strPath2)
+strEmailBody2 = f.read()
+print(strEmailBody2)
+inputNewElement.send_keys(Keys.TAB + strEmailBody2)
+#move to start of the text body
+inputNewElement.send_keys(Keys.TAB + Keys.HOME)
+
+#insert link through ActionNetwork
+ElementLink = driver.find_element_by_css_selector(".re-button.re-link.redactor-toolbar-link-dropdown")
+ElementLink.click()
+ElementLink = driver.find_element_by_css_selector(".redactor-dropdown-link")
+ElementLink.click()
+ElementURL = driver.find_element_by_id("redactor-link-url")
+#select the URL
+strSurvey = "URL"
+ElementURL.send_keys(strSurvey)
+ElementName = driver.find_element_by_id("redactor-link-url-text")
+#insert the presentation name
+ElementName.send_keys("Link to survey")
+ElementTemp = driver.find_element_by_id("redactor-link-blank")
+ElementTemp.click()
+ElementTemp = driver.find_element_by_id("redactor-modal-button-action")
+ElementTemp.click()
+
+#Get the second part of the text
+strPath1 = "PATH"
+f = open(strPath1)
+strEmailBody1 = f.read()
+print(strEmailBody1)
+inputNewElement.send_keys(Keys.TAB + strEmailBody1)
+
+#pauze the system when moving through the next steps
+#move from email to targeting
+time.sleep(5)
+inputElement = driver.find_element_by_id("email-next_step")
+inputElement.click()
+#move from targeting to Save,Preview and Send
+time.sleep(5)
+inputElement = driver.find_element_by_id("email-next_step")
+inputElement.click()
+
+#hold and refresh to allow for calculation time
+time.sleep(10)
+driver.refresh()
+#send email
+import pdb; pdb.set_trace()
+sendElement = driver.find_element_by_name("btnAction")
+sendElement.click()
+#confirms sending the email
+sendElement = driver.find_element_by_name("email-confirm-send")
+sendElement.click()
+
+driver.quit()
+
